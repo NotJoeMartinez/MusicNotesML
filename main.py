@@ -9,6 +9,10 @@ from scipy.ndimage import binary_fill_holes
 from skimage.morphology import skeletonize, thin
 from pathlib import Path
 
+import logging
+logging.basicConfig(filename="main.log", filemode='w')
+
+
 
 def main(args):
     full_img_path = args.img_path
@@ -16,17 +20,13 @@ def main(args):
     img_ext = Path(full_img_path).suffix 
     # img_pdir = Path(full_img_path).parent
 
-    logging.error(f"full_image_path {full_img_path} {type(full_img_path)}")
-    logging.error(f"img_name: {img_name} {type(img_name)}")
-    logging.error(f"img_ext: {img_ext} {type(img_ext)}")
-
 
     img = io.imread(full_img_path)
     img = gray_img(img)
-    # show_images([img])
     # img = get_thresholded(img, threshold_otsu(img))
     horizontal = IsHorizontal(img)
 
+    print(f"horizontal = {horizontal}")
     if horizontal == False:
         theta = deskew(img)
         img = rotation(img,theta)
@@ -36,6 +36,10 @@ def main(args):
         horizontal = IsHorizontal(img)
     # show_images([img])
 
+    # if img.shape[1] < 1300:
+    #     img = resize(img, (img.shape[0], 2000))
+    # if img.shape[0] > 250:
+    #     img = resize(img, (250, img.shape[1]))
 
     original = img.copy()
     gray = get_gray(img)
@@ -47,10 +51,7 @@ def main(args):
     imgs_without_staff = segmenter.regions_without_staff
 
     # for i, img in enumerate(imgs_without_staff):
-    #     show_images([img, imgs_with_staff[i]])
-
-
-
+        # show_images([img, imgs_with_staff[i]])
 
     imgs_spacing = []
     imgs_rows = []
@@ -199,10 +200,16 @@ def main(args):
                 res = ["\\" + "meter<\"" + str(time_name[0]) + "/" + str(time_name[1])+"\">"] + res
             
             if len(res) > 0:
-                detected_note = res[-1]
-                logging.error(f"detected: {detected_note}")
-                logging.error(f"detected_note: {detected_note}")
-                cv2.putText(detected, detected_note, (minc-2, minr-2), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0,0,225), 2)
+
+                detected_notes = res[-1]
+                # check for multiple notes
+                if len(detected_notes)>1:
+                    notes_str = ""
+                    for note in detected_notes:
+                        notes_str += note
+                    cv2.putText(detected, notes_str, (minc-2, minr-2), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0,0,225), 2)
+                else:
+                    cv2.putText(detected, detected_notes, (minc-2, minr-2), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0,0,225), 2)
             else:
                 detected_note = "Unable to detet note"
                 # cv2.putText(detected, detected_note, (minc-2, minr-2), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0,0,225), 2)
@@ -220,13 +227,8 @@ def main(args):
 
         subprocess.run(f"convert {no_staff} -matte \( +clone -fuzz 10% -transparent '#ff0000' \) -compose DstOut -composite {overlay}", shell=True)
         subprocess.run(f"magick composite -colorspace sRGB -gravity center {overlay} {background} {output}", shell=True)
-        show_og_overlayed(full_img_path, output)
-        # subprocess.run(f"open {output}", shell=True)
-
-
-
-
-
+        print(res)
+        show_og_overlayed(full_img_path, output, res)
 
 
 
@@ -309,9 +311,6 @@ if __name__ == '__main__':
         }
     }
 
-
-    import logging
-    logging.basicConfig(filename="main.log", filemode='w')
 
     import argparse
     parser = argparse.ArgumentParser(description='Overlays finger numbers')
