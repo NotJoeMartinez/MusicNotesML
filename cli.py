@@ -12,8 +12,6 @@ from pathlib import Path
 import logging
 logging.basicConfig(filename="main.log", filemode='w')
 
-
-
 def main(args):
     full_img_path = args.img_path
     img_name = Path(full_img_path).stem
