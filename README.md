@@ -8,3 +8,6 @@ Curretnly working off modified version of https://github.com/aashrafh/Mozart
 
 **output**
 ![output](docs/04_output_0.png)
+
+**Scale**
+![scale](docs/treble_c_scale.png)
