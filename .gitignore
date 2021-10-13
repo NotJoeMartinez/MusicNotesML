@@ -6,6 +6,7 @@ __pycache__/
 *.png
 *.PNG
 .vscode/*
+*.log
 
 # C extensions
 *.so
