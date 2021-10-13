@@ -9,11 +9,6 @@ from scipy.ndimage import binary_fill_holes
 from skimage.morphology import skeletonize, thin
 from pathlib import Path
 
-import logging
-logging.basicConfig(filename="main.log", filemode='w')
-
-
-
 
 def main(args):
     full_img_path = args.img_path
@@ -28,7 +23,7 @@ def main(args):
 
     img = io.imread(full_img_path)
     img = gray_img(img)
-    show_images([img])
+    # show_images([img])
     # img = get_thresholded(img, threshold_otsu(img))
     horizontal = IsHorizontal(img)
 
@@ -39,22 +34,20 @@ def main(args):
         img = get_thresholded(img, threshold_otsu(img))
         img = get_closer(img)
         horizontal = IsHorizontal(img)
-    show_images([img])
-
-
+    # show_images([img])
 
 
     original = img.copy()
     gray = get_gray(img)
     bin_img = get_thresholded(gray, threshold_otsu(gray))
-    show_images([gray, bin_img], ['Gray', 'Binary'])
+    # show_images([gray, bin_img], ['Gray', 'Binary'])
 
     segmenter = Segmenter(bin_img)
     imgs_with_staff = segmenter.regions_with_staff
     imgs_without_staff = segmenter.regions_without_staff
 
-    for i, img in enumerate(imgs_without_staff):
-        show_images([img, imgs_with_staff[i]])
+    # for i, img in enumerate(imgs_without_staff):
+    #     show_images([img, imgs_with_staff[i]])
 
 
 
@@ -90,7 +83,7 @@ def main(args):
 
     for i, img in enumerate(coord_imgs):
         new_img = draw_staff(img,imgs_rows[i])
-        show_images([img,new_img], ['Binary','new'])  
+        # show_images([img,new_img], ['Binary','new'])  
         cv2.imwrite(f'output/{img_name}_without_staff_{i}.png', np.array(255*img).astype(np.uint8))
         cv2.imwrite(f'output/{img_name}_with_new_staff_{i}.png', np.array(255*new_img).astype(np.uint8))
 
@@ -126,7 +119,7 @@ def main(args):
             if label in black_names:
                 test_img = np.copy(prim_with_staff[j])
                 test_img = binary_dilation(test_img, disk(disk_size))
-                show_images([prim_with_staff[j], test_img], ['Original', 'Connected Component with staff'])
+                # show_images([prim_with_staff[j], test_img], ['Original', 'Connected Component with staff'])
                 comps, comp_w_staff, bounds = get_connected_components(test_img, prim_with_staff[j])
                 comps, comp_w_staff, bounds = filter_beams(comps, comp_w_staff, bounds)
                 bounds = [np.array(bound)+disk_size-2 for bound in bounds]
@@ -173,7 +166,7 @@ def main(args):
                 print(l)
 
             elif label in ['bar', 'bar_b', 'clef', 'clef_b', 'natural', 'natural_b'] or label in []:
-                show_images([prim], [label])
+                # show_images([prim], [label])
                 continue
             elif label in ['#', '#_b']:
                 if prim.shape[0] == prim.shape [1]:
@@ -201,7 +194,7 @@ def main(args):
                 head_img = binary_closing(1-img, disk(disk_size))
             if label not in ['flat', 'flat_b', 'cross', '#', '#_b']:
                 prev = ''
-            show_images([prim], [label])
+            # show_images([prim], [label])
             if len(time_name) == 2:
                 res = ["\\" + "meter<\"" + str(time_name[0]) + "/" + str(time_name[1])+"\">"] + res
             
@@ -215,7 +208,7 @@ def main(args):
                 # cv2.putText(detected, detected_note, (minc-2, minr-2), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0,0,225), 2)
             
 
-        show_images([detected], ['Detected'])
+        # show_images([detected], ['Detected'])
 
         no_staff = f'output/{img_name}_detected_{i}.png'
         overlay = f"output/{img_name}_overlay_{i}.png"
@@ -227,7 +220,8 @@ def main(args):
 
         subprocess.run(f"convert {no_staff} -matte \( +clone -fuzz 10% -transparent '#ff0000' \) -compose DstOut -composite {overlay}", shell=True)
         subprocess.run(f"magick composite -colorspace sRGB -gravity center {overlay} {background} {output}", shell=True)
-        subprocess.run(f"open {output}", shell=True)
+        show_og_overlayed(full_img_path, output)
+        # subprocess.run(f"open {output}", shell=True)
 
 
 
@@ -281,12 +275,6 @@ def get_chord_notation(chord_list):
 
 if __name__ == '__main__':
 
-    # img_name="08"
-    # img_ext = 'png'
-    # imgs_path = 'test_imgs/'
-
-
-
     label_map = {
         0:{
             0: 'N0'
@@ -321,6 +309,9 @@ if __name__ == '__main__':
         }
     }
 
+
+    import logging
+    logging.basicConfig(filename="main.log", filemode='w')
 
     import argparse
     parser = argparse.ArgumentParser(description='Overlays finger numbers')

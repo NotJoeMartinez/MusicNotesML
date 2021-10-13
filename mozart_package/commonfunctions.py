@@ -1,7 +1,8 @@
 
 
-from cv2 import log
+from cv2 import log, imread
 import skimage.io as io
+import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import numpy as np
 from skimage.exposure import histogram
@@ -13,8 +14,29 @@ from skimage.feature import canny
 from skimage.transform import resize
 
 import logging
-
 logging.basicConfig(filename='commonfunctions.log', filemode='w') 
+
+def show_og_overlayed(og_fname, ov_fname):
+    rows = 2
+    columns = 1
+    og = imread(og_fname)
+    ov = imread(ov_fname)
+
+    fig = plt.figure(figsize=(10, 7))
+    fig.add_subplot(rows, columns, 1)
+
+    # show og img 
+    plt.imshow(ov)
+    plt.title("With Overlay")
+    fig.add_subplot(rows, columns, 2)
+
+    # show overlayed img 
+    plt.imshow(og)
+    plt.title("Original Image")
+
+    plt.show()
+
+
 def show_images(images, titles=None):
     n_ims = len(images)
     if titles is None:

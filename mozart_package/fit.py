@@ -15,9 +15,3 @@ def predict(img):
     labels = model.predict([features])
 
     return labels
-
-
-# if __name__ == "__main__":
-#     img = cv2.imread('testresult/0_6.png')
-#     labels = predict(img)
-#     print(labels)
