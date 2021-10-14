@@ -18,8 +18,8 @@ def main(args):
     img_ext = Path(full_img_path).suffix 
     # img_pdir = Path(full_img_path).parent
 
-
     img = io.imread(full_img_path)
+    print(img)
     img = gray_img(img)
     # img = get_thresholded(img, threshold_otsu(img))
     # horizontal = IsHorizontal(img)
@@ -93,6 +93,7 @@ def main(args):
 
 
     black_names = ['4', '8', '8_b_n', '8_b_r', '16', '16_b_n', '16_b_r', '32', '32_b_n', '32_b_r', 'a_4', 'a_8', 'a_16', 'a_32', 'chord']
+
     ring_names = ['2', 'a_2']
     whole_names = ['1', 'a_1']
     disk_size = segmenter.most_common / 4
