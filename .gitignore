@@ -8,6 +8,7 @@ test_imgs/*.png
 test_imgs/*.PNG
 .vscode/*
 *.log
+API/uploads/*
 
 pirated_music_books/
 pirated_music_books/*
