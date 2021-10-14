@@ -11,4 +11,9 @@ run_flask(){
 	flask run
 }
 
+send_post_to_prod(){
+	curl -X POST -H "Content-Type: application/json" -d \
+	'{"image" : "'"$( base64 mozart/test_imgs/01.png)"'", "secret_key" : "'"$MSHACK_KEY"'"}'\
+	http://[rmoteip]/getnotes
+}
 $@

@@ -10,7 +10,6 @@ from skimage.morphology import skeletonize, thin
 from pathlib import Path
 import logging
 
-logging.basicConfig(filename="main.log", filemode='w')
 
 label_map = {
         0:{
@@ -69,7 +68,7 @@ def filter_beams(prims, prim_with_staff, bounds):
     n_prim_with_staff = []
     for i, prim in enumerate(prims):
         if prim.shape[1] >= 2*prim.shape[0]:
-            print('filter: ', prim.shape)
+            #print('filter: ', prim.shape)
             continue
         else:
             n_bounds.append(bounds[i])
@@ -97,7 +96,7 @@ def make_predictions(fpath):
     img_ext = Path(full_img_path).suffix 
 
     img = io.imread(full_img_path)
-    print(img)
+    #print(img)
     img = gray_img(img)
     # img = get_thresholded(img, threshold_otsu(img))
     # horizontal = IsHorizontal(img)
@@ -143,7 +142,7 @@ def make_predictions(fpath):
         coord_imgs.append(no_staff_img)
 
     def estim(c, idx):
-        print('estim idx: ', idx)
+        #print('estim idx: ', idx)
         spacing = imgs_spacing[idx]
         rows = imgs_rows[idx]
         margin = 1+(spacing/4)
@@ -158,14 +157,14 @@ def make_predictions(fpath):
     def draw_staff(img,row_positions):
         image = np.copy(img)
         for x in range (len(row_positions)):
-            print(int(row_positions[x]))
+            #print(int(row_positions[x]))
             image[int(row_positions[x]),:] = 0
         return image
 
     for i, img in enumerate(coord_imgs):
         new_img = draw_staff(img,imgs_rows[i])
         # show_images([img,new_img], ['Binary','new'])  
-        cv2.imwrite(f'API/predictions/output/{img_name}_without_staff_{i}.png', np.array(255*img).astype(np.uint8))
+        #cv2.imwrite(f'API/predictions/output/{img_name}_without_staff_{i}.png', np.array(255*img).astype(np.uint8))
         cv2.imwrite(f'API/predictions/output/{img_name}_with_new_staff_{i}.png', np.array(255*new_img).astype(np.uint8))
 
 
@@ -210,11 +209,11 @@ def make_predictions(fpath):
                     l_res = []
                     bounds = sorted(bounds, key= lambda b : -b[2])
                     for k in range(len(bounds)):
-                        print("Bound")
+                        #print("Bound")
                         idx, p = estim(boundary[j][0]+bounds[k][2], i)
                         l_res.append(f'{label_map[idx][p]}/4')
                         if k+1 < len(bounds) and (bounds[k][2]-bounds[k+1][2]) > 1.5*imgs_spacing[i]:
-                            print("IF COND", bounds[k][2]-bounds[k+1][2], 1.25*imgs_spacing[i])
+                            #print("IF COND", bounds[k][2]-bounds[k+1][2], 1.25*imgs_spacing[i])
                             idx, p = estim(boundary[j][0]+bounds[k][2]-imgs_spacing[i]/2, i)
                             l_res.append(f'{label_map[idx][p]}/4')
                     res.append(sorted(l_res))
@@ -224,8 +223,8 @@ def make_predictions(fpath):
                         line_idx, p = estim(int(c), i)
                         l = label_map[line_idx][p]
                         res.append(get_note_name(prev, l, label))
-                        print(c)
-                        print(l)
+                        #print(c)
+                        #print(l)
 
             elif label in ring_names:
                 head_img = 1-binary_fill_holes(1-prim)
@@ -236,16 +235,16 @@ def make_predictions(fpath):
                     line_idx, p = estim(int(c), i)
                     l = label_map[line_idx][p]
                     res.append(get_note_name(prev, l, label))
-                    print(c)
-                    print(l)
+                    #print(c)
+                    #print(l)
 
             elif label in whole_names:
                 c = boundary[j][2]
                 line_idx, p = estim(int(c), i)
                 l = label_map[line_idx][p]
                 res.append(get_note_name(prev, l, label))
-                print(c)
-                print(l)
+                #print(c)
+                #print(l)
 
             elif label in ['bar', 'bar_b', 'clef', 'clef_b', 'natural', 'natural_b'] or label in []:
                 # show_images([prim], [label])
@@ -271,7 +270,7 @@ def make_predictions(fpath):
             elif label in []:
                 time_name = label[1]+label[2]
             elif label == 'chord':
-                print('Chord')
+                #print('Chord')
                 img = thin(1-prim.copy(), max_iter=20)
                 head_img = binary_closing(1-img, disk(disk_size))
             if label not in ['flat', 'flat_b', 'cross', '#', '#_b']:
@@ -299,18 +298,26 @@ def make_predictions(fpath):
 
         no_staff = f'API/predictions/output/{img_name}_detected_{i}.png'
         overlay = f"API/predictions/output/{img_name}_overlay_{i}.png"
-        background = full_img_path
+        background =f"API/uploads/{img_name}{img_ext}" 
         output = f"API/predictions/output/{img_name}_output_{i}.png"
 
         cv2.imwrite(no_staff, detected)
 
         import subprocess
         subprocess.run(f"convert {no_staff} -matte \( +clone -fuzz 10% -transparent '#ff0000' \) -compose DstOut -composite {overlay}", shell=True)
-        subprocess.run(f"magick composite -colorspace sRGB -gravity center {overlay} {background} {output}", shell=True)
+
+        subprocess.run(f"magick composite -colorspace RGB -gravity center {overlay} {background} {output}", shell=True)
+        #subprocess.run(f"convert{overlay}  -draw \"image over x,y 0,0 '{background}'\" {output}", shell=True)
+
+        from PIL import Image
+        background_img = cv2.imread(background)
+        overlay_img = cv2.imread(overlay)
+        added_image = cv2.addWeighted(background_img,0.3,overlay_img,0.7,0)
+        cv2.imwrite(output, added_image)
 
         return_dict = { 
             "notes_arr": res,
-            "overlayed_img_path": output
+            "overlayed_img_name":output
         }
         return return_dict
 

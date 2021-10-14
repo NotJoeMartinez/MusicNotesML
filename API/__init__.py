@@ -8,7 +8,7 @@ import subprocess
 
 app = Flask(__name__)
 
-@app.route("/get_notes", methods=["POST", "GET"])
+@app.route("/getnotes", methods=["POST", "GET"])
 def process_image():
 
     secret_key_attempt = request.json["secret_key"]
@@ -28,8 +28,9 @@ def process_image():
         f.write(img_data)
 
     preds_dict = make_predictions(full_img_path)
+    output_filename = preds_dict["overlayed_img_name"]  
 
-    with open(preds_dict["overlayed_img_path"], "rb") as f:
+    with open(output_filename, "rb") as f:
         b64_overlayed_img = base64.b64encode(f.read())
         b64_overlayed_img = b64_overlayed_img.decode('utf-8')
 
@@ -42,6 +43,9 @@ def process_image():
 
 
 
+@app.route("/", methods=["POST", "GET"])
+def test_gui():
+    return "this is working"
     
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0')
