@@ -15,7 +15,7 @@ def readFingeringDataset():
 
     DictionaryList = [TrumpetDict, TromboneDict, EuphoniumDict, TubaDict, FrenchHornDict]
     for dict in DictionaryList:
-        del dict['\xef\xbb\xbf']
+        del dict["\xef\xbb\xbfNote"]
     return DictionaryList
 
 def run():
