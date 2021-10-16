@@ -1,8 +1,8 @@
 
 send_post(){
 	curl -X POST -H "Content-Type: application/json" -d \
-	'{"image" : "'"$( base64 mozart/test_imgs/01.png)"'", "secret_key" : "'"$MSHACK_KEY"'"}'\
-	http://127.0.0.1:5000/get_notes
+	'{"image" : "'"$( base64 testing/test_imgs/01.png)"'", "secret_key" : "'"$MSHACK_KEY"'"}'\
+	http://127.0.0.1:5000/getnotes
 }
 
 run_flask(){
@@ -13,7 +13,7 @@ run_flask(){
 
 send_post_to_prod(){
 	curl -X POST -H "Content-Type: application/json" -d \
-	'{"image" : "'"$( base64 mozart/test_imgs/01.png)"'", "secret_key" : "'"$MSHACK_KEY"'"}'\
-	http://[rmoteip]/getnotes
+	'{"image" : "'"$( base64 testing/test_imgs/01.png)"'", "secret_key" : "'"$MSHACK_KEY"'"}'\
+	http://40.121.3.69/getnotes
 }
 $@

@@ -46,47 +46,6 @@ label_map = {
     }
 
 
-def get_note_name(prev, octave, duration):
-    if duration in ['4', 'a_4']:
-        return f'{octave[0]}{prev}{octave[1]}/4'
-    elif duration in ['8', '8_b_n', '8_b_r', 'a_8']:
-        return f'{octave[0]}{prev}{octave[1]}/8'
-    elif duration in ['16', '16_b_n', '16_b_r', 'a_16']:
-        return f'{octave[0]}{prev}{octave[1]}/16'
-    elif duration in ['32', '32_b_n', '32_b_r', 'a_32']:
-        return f'{octave[0]}{prev}{octave[1]}/32'
-    elif duration in ['2', 'a_2']:
-        return f'{octave[0]}{prev}{octave[1]}/2'
-    elif duration in ['1', 'a_1']:
-        return f'{octave[0]}{prev}{octave[1]}/1'
-
-
-
-def filter_beams(prims, prim_with_staff, bounds):
-    n_bounds = []
-    n_prims = []
-    n_prim_with_staff = []
-    for i, prim in enumerate(prims):
-        if prim.shape[1] >= 2*prim.shape[0]:
-            #print('filter: ', prim.shape)
-            continue
-        else:
-            n_bounds.append(bounds[i])
-            n_prims.append(prims[i])
-            n_prim_with_staff.append(prim_with_staff[i])
-    return n_prims, n_prim_with_staff, n_bounds
-
-
-
-
-def get_chord_notation(chord_list):
-    chord_res = "{"
-    for chord_note in chord_list:
-        chord_res += (str(chord_note) + ",")
-    chord_res = chord_res[:-1]
-    chord_res += "}"
-    
-    return chord_res
 
 
 
@@ -123,14 +82,14 @@ def make_predictions(fpath):
     original = img.copy()
     gray = get_gray(img)
     bin_img = get_thresholded(gray, threshold_otsu(gray))
-    # show_images([gray, bin_img], ['Gray', 'Binary'])
+    show_images([gray, bin_img], ['Gray', 'Binary'])
 
     segmenter = Segmenter(bin_img)
     imgs_with_staff = segmenter.regions_with_staff
     imgs_without_staff = segmenter.regions_without_staff
 
-    # for i, img in enumerate(imgs_without_staff):
-        # show_images([img, imgs_with_staff[i]])
+    for i, img in enumerate(imgs_without_staff):
+        show_images([img, imgs_with_staff[i]])
 
     imgs_spacing = []
     imgs_rows = []
@@ -163,9 +122,49 @@ def make_predictions(fpath):
 
     for i, img in enumerate(coord_imgs):
         new_img = draw_staff(img,imgs_rows[i])
-        # show_images([img,new_img], ['Binary','new'])  
-        #cv2.imwrite(f'API/predictions/output/{img_name}_without_staff_{i}.png', np.array(255*img).astype(np.uint8))
+        show_images([img,new_img], ['Binary','new'])  
+        cv2.imwrite(f'API/predictions/output/{img_name}_without_staff_{i}.png', np.array(255*img).astype(np.uint8))
         cv2.imwrite(f'API/predictions/output/{img_name}_with_new_staff_{i}.png', np.array(255*new_img).astype(np.uint8))
+
+    def get_note_name(prev, octave, duration):
+        if duration in ['4', 'a_4']:
+            return f'{octave[0]}{prev}{octave[1]}/4'
+        elif duration in ['8', '8_b_n', '8_b_r', 'a_8']:
+            return f'{octave[0]}{prev}{octave[1]}/8'
+        elif duration in ['16', '16_b_n', '16_b_r', 'a_16']:
+            return f'{octave[0]}{prev}{octave[1]}/16'
+        elif duration in ['32', '32_b_n', '32_b_r', 'a_32']:
+            return f'{octave[0]}{prev}{octave[1]}/32'
+        elif duration in ['2', 'a_2']:
+            return f'{octave[0]}{prev}{octave[1]}/2'
+        elif duration in ['1', 'a_1']:
+            return f'{octave[0]}{prev}{octave[1]}/1'
+
+
+    def filter_beams(prims, prim_with_staff, bounds):
+        n_bounds = []
+        n_prims = []
+        n_prim_with_staff = []
+        for i, prim in enumerate(prims):
+            if prim.shape[1] >= 2*prim.shape[0]:
+                print('filter: ', prim.shape)
+                continue
+            else:
+                n_bounds.append(bounds[i])
+                n_prims.append(prims[i])
+                n_prim_with_staff.append(prim_with_staff[i])
+        return n_prims, n_prim_with_staff, n_bounds
+
+
+    def get_chord_notation(chord_list):
+        chord_res = "{"
+        for chord_note in chord_list:
+            chord_res += (str(chord_note) + ",")
+        chord_res = chord_res[:-1]
+        chord_res += "}"
+        
+        return chord_res
+
 
 
 
@@ -305,7 +304,6 @@ def make_predictions(fpath):
 
         import subprocess
         subprocess.run(f"convert {no_staff} -matte \( +clone -fuzz 10% -transparent '#ff0000' \) -compose DstOut -composite {overlay}", shell=True)
-
         subprocess.run(f"magick composite -colorspace RGB -gravity center {overlay} {background} {output}", shell=True)
         #subprocess.run(f"convert{overlay}  -draw \"image over x,y 0,0 '{background}'\" {output}", shell=True)
 

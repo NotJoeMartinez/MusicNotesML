@@ -34,6 +34,7 @@ def process_image():
         b64_overlayed_img = base64.b64encode(f.read())
         b64_overlayed_img = b64_overlayed_img.decode('utf-8')
 
+    print(preds_dict)
 
     return jsonify({
                     'image_path': full_img_path,
