@@ -1,3 +1,8 @@
+mozart/train_data
+mozart/train_data/*
+testing
+testing/*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
