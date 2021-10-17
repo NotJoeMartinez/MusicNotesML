@@ -4,7 +4,7 @@ from flask import Flask, request, jsonify
 from PIL import Image
 import base64
 from .predictions import make_predictions
-import subprocess
+import subprocess,argparse
 
 app = Flask(__name__)
 
@@ -27,7 +27,10 @@ def process_image():
         img_data = base64.b64decode(img_data)
         f.write(img_data)
 
-    preds_dict = make_predictions(full_img_path)
+
+    instrament = request.json['instrament']
+    preds_dict = make_predictions(full_img_path, instrament)
+
     output_filename = preds_dict["overlayed_img_name"]  
 
     with open(output_filename, "rb") as f:
