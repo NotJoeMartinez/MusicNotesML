@@ -2,6 +2,7 @@
 send_post(){
 	rm API/uploads/*.png
 	rm API/predictions/output/*.png
+	rm API/predictions/output/*.txt
 	uuid=$(uuidgen)
 	curl -X POST -H "Content-Type: application/json" -d \
 	'{"image" : "'"$( base64 testing/testing_imgs/01.PNG)"'", "secret_key" : "'"$MSHACK_KEY"'", "'"instrament"'": "'"tuba"'"}'\

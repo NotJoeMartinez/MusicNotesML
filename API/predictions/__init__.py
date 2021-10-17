@@ -261,6 +261,12 @@ def recognize(out_file, img_name, full_img_path, most_common, coord_imgs, imgs_w
     subprocess.run(f"convert {no_staff} -matte \( +clone -fuzz 10% -transparent '#ff0000' \) -compose DstOut -composite {overlay}", shell=True)
     subprocess.run(f"magick composite -colorspace sRGB -gravity center {overlay} {background} {output}", shell=True)
 
+    from PIL import Image
+    background_img = cv2.imread(background)
+    overlay_img = cv2.imread(overlay)
+    added_image = cv2.addWeighted(background_img,0.4,overlay_img,0.7,0)
+    cv2.imwrite(output, added_image)
+
     
     return_dict = {}
     return_dict["notes_arr"] = res
