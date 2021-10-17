@@ -47,6 +47,8 @@ label_map = {
 }
 
 
+
+
 def estim(c, idx, imgs_spacing, imgs_rows):
     spacing = imgs_spacing[idx]
     rows = imgs_rows[idx]
@@ -266,17 +268,20 @@ def recognize(out_file, img_name, full_img_path, most_common, coord_imgs, imgs_w
 
 
 
-def main(input_path, output_path):
-    img_paths = sorted(glob(f'{input_path}/*'))
+def main(args):
+    
 
-    for img_path in img_paths:
+    if args.file != "":
+        img_path = args.file
         img_name = img_path.split('/')[-1].split('.')[0]
+        output_path = "testing/testing_output"
         out_file = open(f'{output_path}/{img_name}.txt', "w")
         full_img_path = img_path
         print(f"Processing new image {img_name}...")
         img = io.imread(img_path)
         img = gray_img(img)
         horizontal = IsHorizontal(img)
+
         if horizontal == False:
             theta = deskew(img)
             img = rotation(img, theta)
@@ -287,14 +292,10 @@ def main(input_path, output_path):
 
         original = img.copy()
         gray = get_gray(img)
-        bin_img = get_thresholded(gray, threshold_otsu(gray))
-
+        bin_img = get_thresholded(gray, threshold_otsu(gray))        
         segmenter = Segmenter(bin_img)
         imgs_with_staff = segmenter.regions_with_staff
         most_common = segmenter.most_common
-
-        # imgs_without_staff = segmenter.regions_without_staff
-
         imgs_spacing = []
         imgs_rows = []
         coord_imgs = []
@@ -306,16 +307,65 @@ def main(input_path, output_path):
 
         print("Recognize...")
         recognize(out_file, img_name, full_img_path, most_common, coord_imgs,
-                  imgs_with_staff, imgs_spacing, imgs_rows)
+                imgs_with_staff, imgs_spacing, imgs_rows)
         out_file.close()
         print("Done...")
+
+
+    if args.input_dir != "" and args.output_dir != "":
+        input_path = args.input_dir 
+        output_path = args.output_dir
+        img_paths = sorted(glob(f'{input_path}/*'))
+        for img_path in img_paths:
+            img_name = img_path.split('/')[-1].split('.')[0]
+            out_file = open(f'{output_path}/{img_name}.txt', "w")
+            full_img_path = img_path
+            print(f"Processing new image {img_name}...")
+            img = io.imread(img_path)
+            img = gray_img(img)
+            horizontal = IsHorizontal(img)
+            if horizontal == False:
+                theta = deskew(img)
+                img = rotation(img, theta)
+                img = get_gray(img)
+                img = get_thresholded(img, threshold_otsu(img))
+                img = get_closer(img)
+                horizontal = IsHorizontal(img)
+
+            original = img.copy()
+            gray = get_gray(img)
+            bin_img = get_thresholded(gray, threshold_otsu(gray))
+
+            segmenter = Segmenter(bin_img)
+            imgs_with_staff = segmenter.regions_with_staff
+            most_common = segmenter.most_common
+
+            # imgs_without_staff = segmenter.regions_without_staff
+
+            imgs_spacing = []
+            imgs_rows = []
+            coord_imgs = []
+            for i, img in enumerate(imgs_with_staff):
+                spacing, rows, no_staff_img = coordinator(img, horizontal)
+                imgs_rows.append(rows)
+                imgs_spacing.append(spacing)
+                coord_imgs.append(no_staff_img)
+
+            print("Recognize...")
+            recognize(out_file, img_name, full_img_path, most_common, coord_imgs,
+                    imgs_with_staff, imgs_spacing, imgs_rows)
+            out_file.close()
+            print("Done...")
+
+
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
+    parser.add_argument("-f", "--file", action="store", help="test one file")
     parser.add_argument("-i","--input-dir", help="Input directory")
     parser.add_argument("-o","--output-dir", help="Output directory")
 
     args = parser.parse_args()
-    main(args.input_dir, args.output_dir)
+    main(args)
