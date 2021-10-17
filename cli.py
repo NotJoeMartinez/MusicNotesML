@@ -12,42 +12,8 @@ from scipy.ndimage import binary_fill_holes
 from skimage.morphology import thin
 import argparse
 
-label_map = {
-    0: {
-        0: 'N0'
-    },
-    1: {
-        0: 'b2',
-        1: 'a2'
-    },
-    2: {
-        0: 'g2',
-        1: 'f2'
-    },
-    3: {
-        0: 'e2',
-        1: 'd2'
-    },
-    4: {
-        0: 'c2',
-        1: 'b1'
-    },
-    5: {
-        0: 'a1',
-        1: 'g1'
-    },
-    6: {
-        0: 'f1',
-        1: 'e1'
-    },
-    7: {
-        0: 'd1',
-        1: 'c1'
-    }
-}
-
-
-
+from mozart.label_map import get_label_map
+label_map = get_label_map()
 
 def estim(c, idx, imgs_spacing, imgs_rows):
     spacing = imgs_spacing[idx]
@@ -109,13 +75,6 @@ def draw_staff(img,row_positions):
         image[int(row_positions[x]),:] = 0
     return image
 
-# for i, img in enumerate(coord_imgs):
-#     new_img = draw_staff(img,imgs_rows[i])
-#     # show_images([img,new_img], ['Binary','new'])  
-#     cv2.imwrite(f'output/{img_name}_without_staff_{i}.png', np.array(255*img).astype(np.uint8))
-#     cv2.imwrite(f'output/{img_name}_with_new_staff_{i}.png', np.array(255*new_img).astype(np.uint8))
-    
-
 def recognize(out_file, img_name, full_img_path, most_common, coord_imgs, imgs_with_staff, imgs_spacing, imgs_rows):
     black_names = ['4', '8', '8_b_n', '8_b_r', '16', '16_b_n', '16_b_r',
                    '32', '32_b_n', '32_b_r', 'a_4', 'a_8', 'a_16', 'a_32', 'chord']
@@ -136,6 +95,7 @@ def recognize(out_file, img_name, full_img_path, most_common, coord_imgs, imgs_w
         for j, prim in enumerate(primitives):
             # for drawing box
             minr, minc, maxr, maxc = boundary[j]
+
             prim = binary_opening(prim, square(
                 np.abs(most_common-imgs_spacing[i])))
             saved_img = (255*(1 - prim)).astype(np.uint8)
