@@ -1,7 +1,10 @@
 mozart/train_data
 mozart/train_data/*
-testing
-testing/*
+testing/api_testing_imgs
+testing/testing_imgs
+testing/testing_output
+testing/FingeringTable.csv
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
