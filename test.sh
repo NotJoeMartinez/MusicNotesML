@@ -6,7 +6,8 @@ test_dir(){
 }
 
 test_one(){
-	python cli.py -f testing/testing_imgs/02.PNG
+	# python cli.py -f testing/testing_imgs/02.PNG
+	python cli.py -f testing/testing_imgs/01.PNG 
 }
 
 $@

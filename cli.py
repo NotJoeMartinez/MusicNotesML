@@ -89,7 +89,8 @@ def recognize(out_file, img_name, full_img_path, most_common, coord_imgs, imgs_w
         time_name = ''
         primitives, prim_with_staff, boundary = get_connected_components(
             img, imgs_with_staff[i])
-        
+
+
         # for drawing box
         detected = cv2.cvtColor(np.array(255*img.copy()).astype(np.uint8),cv2.COLOR_GRAY2RGB)
         for j, prim in enumerate(primitives):
@@ -174,8 +175,8 @@ def recognize(out_file, img_name, full_img_path, most_common, coord_imgs, imgs_w
             if label not in ['flat', 'flat_b', 'cross', '#', '#_b']:
                 prev = ''
 
+            # puts notes on images 
             if len(res) > 0:
-
                 detected_notes = res[-1]
                 # check for multiple notes
                 if len(detected_notes)>1:
@@ -186,11 +187,8 @@ def recognize(out_file, img_name, full_img_path, most_common, coord_imgs, imgs_w
                 else:
                     cv2.putText(detected, detected_notes, (minc-2, minr-2), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0,0,225), 2)
             else:
-                detected_note = "Unable to detet note"            
-                
-        
-        import logging
-        logging.basicConfig(filename="main.log", filemode="w")
+                detected_note = "Unable to detect note"            
+
         if len(time_name) == 2:
             notes = "[ " + "\\" + "meter<\"" + str(time_name[0]) + "/" + str(time_name[1])+"\">" + ' '.join(
                 [str(elem) if type(elem) != list else get_chord_notation(elem) for elem in res]) + "]\n"
@@ -229,9 +227,12 @@ def recognize(out_file, img_name, full_img_path, most_common, coord_imgs, imgs_w
 
 
 def main(args):
-    
+    if args.read_fingernums:
+        import pandas as pd
+        df = pd.read_csv("testing/FingeringTable.csv")
+        print(df)
 
-    if args.file != "":
+    elif args.file:
         img_path = args.file
         img_name = img_path.split('/')[-1].split('.')[0]
         output_path = "testing/testing_output"
@@ -272,7 +273,7 @@ def main(args):
         print("Done...")
 
 
-    if args.input_dir != "" and args.output_dir != "":
+    elif args.input_dir != "" and args.output_dir != "":
         input_path = args.input_dir 
         output_path = args.output_dir
         img_paths = sorted(glob(f'{input_path}/*'))
@@ -326,6 +327,7 @@ if __name__ == "__main__":
     parser.add_argument("-f", "--file", action="store", help="test one file")
     parser.add_argument("-i","--input-dir", help="Input directory")
     parser.add_argument("-o","--output-dir", help="Output directory")
+    parser.add_argument("-fn", "--read-fingernums", action='store_true', help="read finger num stuff")
 
     args = parser.parse_args()
     main(args)
