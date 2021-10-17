@@ -27,22 +27,78 @@ def estim(c, idx, imgs_spacing, imgs_rows):
     return 7, 1
 
 
-def get_note_name(prev, octave, duration):
-    if duration in ['4', 'a_4']:
-        return f'{octave[0]}{prev}{octave[1]}/4'
-    elif duration in ['8', '8_b_n', '8_b_r', 'a_8']:
-        return f'{octave[0]}{prev}{octave[1]}/8'
-    elif duration in ['16', '16_b_n', '16_b_r', 'a_16']:
-        return f'{octave[0]}{prev}{octave[1]}/16'
-    elif duration in ['32', '32_b_n', '32_b_r', 'a_32']:
-        return f'{octave[0]}{prev}{octave[1]}/32'
-    elif duration in ['2', 'a_2']:
-        return f'{octave[0]}{prev}{octave[1]}/2'
-    elif duration in ['1', 'a_1']:
-        return f'{octave[0]}{prev}{octave[1]}/1'
-    else:
-        return "c1/4"
+def get_note_name(prev, octave, duration, fnum="True", instrament="tuba"):
+    from mozart.note_dict import note_dict
+    try:
+        note_name = f'{octave[0]}{prev}{octave[1]}'
+    except:
+        note_name = "NaN"
+        pass
+    try:
+        finger_num = note_dict[note_name.upper()][instrament]
+    except:
+        finger_num = "NaN" 
+        pass
 
+    if fnum=="True":
+        if duration in ['4', 'a_4']:
+            return f'{note_name}/{finger_num}'
+
+        elif duration in ['8', '8_b_n', '8_b_r', 'a_8']:
+            return f'{note_name}/{finger_num}'
+
+        elif duration in ['16', '16_b_n', '16_b_r', 'a_16']:
+            return f'{note_name}/{finger_num}'
+
+        elif duration in ['32', '32_b_n', '32_b_r', 'a_32']:
+            return f'{note_name}/{finger_num}'
+
+        elif duration in ['2', 'a_2']:
+            return f'{note_name}/{finger_num}'
+
+        elif duration in ['1', 'a_1']:
+            return f'{note_name}/{finger_num}'
+        else:
+            note_name = 'c1'
+            try:
+                finger_num = note_dict[note_name.upper()] 
+            except:
+                finger_num = "NaN"
+                
+            return f"{note_name}/{finger_num}"
+
+
+
+    # if duration in ['4', 'a_4']:
+    #     return f'{octave[0]}{prev}{octave[1]}/4'
+    # elif duration in ['8', '8_b_n', '8_b_r', 'a_8']:
+    #     return f'{octave[0]}{prev}{octave[1]}/8'
+    # elif duration in ['16', '16_b_n', '16_b_r', 'a_16']:
+    #     return f'{octave[0]}{prev}{octave[1]}/16'
+    # elif duration in ['32', '32_b_n', '32_b_r', 'a_32']:
+    #     return f'{octave[0]}{prev}{octave[1]}/32'
+    # elif duration in ['2', 'a_2']:
+    #     return f'{octave[0]}{prev}{octave[1]}/2'
+    # elif duration in ['1', 'a_1']:
+    #     return f'{octave[0]}{prev}{octave[1]}/1'
+    # else:
+    #     return "c1/4"
+
+def get_only_note_name(prev, octave, duration):
+    if duration in ['4', 'a_4']:
+        return f'{octave[0]}{prev}{octave[1]}'
+    elif duration in ['8', '8_b_n', '8_b_r', 'a_8']:
+        return f'{octave[0]}{prev}{octave[1]}'
+    elif duration in ['16', '16_b_n', '16_b_r', 'a_16']:
+        return f'{octave[0]}{prev}{octave[1]}'
+    elif duration in ['32', '32_b_n', '32_b_r', 'a_32']:
+        return f'{octave[0]}{prev}{octave[1]}'
+    elif duration in ['2', 'a_2']:
+        return f'{octave[0]}{prev}{octave[1]}'
+    elif duration in ['1', 'a_1']:
+        return f'{octave[0]}{prev}{octave[1]}'
+    else:
+        return "c1"
 
 def filter_beams(prims, prim_with_staff, bounds):
     n_bounds = []
@@ -105,7 +161,7 @@ def recognize(out_file, img_name, full_img_path, most_common, coord_imgs, imgs_w
             label = labels[0]
 
             # for drawing box
-            cv2.rectangle(detected, (minc, minr), (maxc, maxr), (0, 0, 255), 2)
+            # cv2.rectangle(detected, (minc, minr), (maxc, maxr), (0, 0, 255), 2)
 
             if label in black_names:
                 test_img = np.copy(prim_with_staff[j])
@@ -183,9 +239,9 @@ def recognize(out_file, img_name, full_img_path, most_common, coord_imgs, imgs_w
                     notes_str = ""
                     for note in detected_notes:
                         notes_str += note
-                    cv2.putText(detected, notes_str, (minc-2, minr-2), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0,0,225), 2)
+                    cv2.putText(detected, notes_str, (minc-2, minr-2), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255), 2)
                 else:
-                    cv2.putText(detected, detected_notes, (minc-2, minr-2), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0,0,225), 2)
+                    cv2.putText(detected, detected_notes, (minc-2, minr-2), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255), 2)
             else:
                 detected_note = "Unable to detect note"            
 
