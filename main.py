@@ -1,6 +1,7 @@
 from mozart.commonfunctions import *
 from mozart.pre_processing import *
 from mozart.connected_componentes import *
+from mozart.show_overlayed_plots import show_og_overlayed
 from mozart.staff import calculate_thickness_spacing, remove_staff_lines, coordinator
 from mozart.segmenter import Segmenter
 from mozart.fit import predict
@@ -99,7 +100,21 @@ def get_chord_notation(chord_list):
     return chord_res
 
 
-def recognize(out_file, most_common, coord_imgs, imgs_with_staff, imgs_spacing, imgs_rows):
+def draw_staff(img,row_positions):
+    image = np.copy(img)
+    for x in range (len(row_positions)):
+        print(int(row_positions[x]))
+        image[int(row_positions[x]),:] = 0
+    return image
+
+# for i, img in enumerate(coord_imgs):
+#     new_img = draw_staff(img,imgs_rows[i])
+#     # show_images([img,new_img], ['Binary','new'])  
+#     cv2.imwrite(f'output/{img_name}_without_staff_{i}.png', np.array(255*img).astype(np.uint8))
+#     cv2.imwrite(f'output/{img_name}_with_new_staff_{i}.png', np.array(255*new_img).astype(np.uint8))
+    
+
+def recognize(out_file, img_name, full_img_path, most_common, coord_imgs, imgs_with_staff, imgs_spacing, imgs_rows):
     black_names = ['4', '8', '8_b_n', '8_b_r', '16', '16_b_n', '16_b_r',
                    '32', '32_b_n', '32_b_r', 'a_4', 'a_8', 'a_16', 'a_32', 'chord']
     ring_names = ['2', 'a_2']
@@ -113,13 +128,22 @@ def recognize(out_file, most_common, coord_imgs, imgs_with_staff, imgs_spacing, 
         time_name = ''
         primitives, prim_with_staff, boundary = get_connected_components(
             img, imgs_with_staff[i])
+        
+        # for drawing box
+        detected = cv2.cvtColor(np.array(255*img.copy()).astype(np.uint8),cv2.COLOR_GRAY2RGB)
         for j, prim in enumerate(primitives):
+            # for drawing box
+            minr, minc, maxr, maxc = boundary[j]
             prim = binary_opening(prim, square(
                 np.abs(most_common-imgs_spacing[i])))
             saved_img = (255*(1 - prim)).astype(np.uint8)
             labels = predict(saved_img)
             octave = None
             label = labels[0]
+
+            # for drawing box
+            cv2.rectangle(detected, (minc, minr), (maxc, maxr), (0, 0, 255), 2)
+
             if label in black_names:
                 test_img = np.copy(prim_with_staff[j])
                 test_img = binary_dilation(test_img, disk(disk_size))
@@ -187,26 +211,70 @@ def recognize(out_file, most_common, coord_imgs, imgs_with_staff, imgs_spacing, 
                 head_img = binary_closing(1-img, disk(disk_size))
             if label not in ['flat', 'flat_b', 'cross', '#', '#_b']:
                 prev = ''
+
+            if len(res) > 0:
+
+                detected_notes = res[-1]
+                # check for multiple notes
+                if len(detected_notes)>1:
+                    notes_str = ""
+                    for note in detected_notes:
+                        notes_str += note
+                    cv2.putText(detected, notes_str, (minc-2, minr-2), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0,0,225), 2)
+                else:
+                    cv2.putText(detected, detected_notes, (minc-2, minr-2), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0,0,225), 2)
+            else:
+                detected_note = "Unable to detet note"            
+                
+        
+        import logging
+        logging.basicConfig(filename="main.log", filemode="w")
         if len(time_name) == 2:
-            out_file.write("[ " + "\\" + "meter<\"" + str(time_name[0]) + "/" + str(time_name[1])+"\">" + ' '.join(
-                [str(elem) if type(elem) != list else get_chord_notation(elem) for elem in res]) + "]\n")
+            notes = "[ " + "\\" + "meter<\"" + str(time_name[0]) + "/" + str(time_name[1])+"\">" + ' '.join(
+                [str(elem) if type(elem) != list else get_chord_notation(elem) for elem in res]) + "]\n"
+            out_file.write(notes)
+
         elif len(time_name) == 1:
-            out_file.write("[ " + "\\" + "meter<\"" + '4' + "/" + '2' + "\">" + ' '.join(
-                [str(elem) if type(elem) != list else get_chord_notation(elem) for elem in res]) + "]\n")
+            notes = "[ " + "\\" + "meter<\"" + '4' + "/" + '2' + "\">" + ' '.join(
+                [str(elem) if type(elem) != list else get_chord_notation(elem) for elem in res]) + "]\n"
+            out_file.write(notes)
         else:
-            out_file.write("[ " + ' '.join(
-                [str(elem) if type(elem) != list else get_chord_notation(elem) for elem in res]) + "]\n")
+            notes = "[ " + ' '.join(
+                [str(elem) if type(elem) != list else get_chord_notation(elem) for elem in res]) + "]\n"
+            out_file.write(notes)
+
+
+
 
     if len(coord_imgs) > 1:
         out_file.write("}")
+    
+
+    no_staff = f'testing/testing_output/nostaff_detected_{i}.png'
+    overlay = f"testing/testing_output/{img_name}_overlay_{i}.png"
+    background = f"testing/testing_imgs/{img_name}.PNG"
+    output = f"testing/testing_output/output_{img_name}.png"
+
+    cv2.imwrite(no_staff, detected)
+
+    import subprocess
+    subprocess.run(f"convert {no_staff} -matte \( +clone -fuzz 10% -transparent '#ff0000' \) -compose DstOut -composite {overlay}", shell=True)
+    subprocess.run(f"magick composite -colorspace sRGB -gravity center {overlay} {background} {output}", shell=True)
+    # subprocess.run(f"open {output}", shell=True)
+    from mozart.show_overlayed_plots import show_og_overlayed
+    show_og_overlayed(full_img_path, output, res)
+
     print("###########################", res, "##########################")
 
 
+
 def main(input_path, output_path):
-    imgs_path = sorted(glob(f'{input_path}/*'))
-    for img_path in imgs_path:
+    img_paths = sorted(glob(f'{input_path}/*'))
+
+    for img_path in img_paths:
         img_name = img_path.split('/')[-1].split('.')[0]
         out_file = open(f'{output_path}/{img_name}.txt', "w")
+        full_img_path = img_path
         print(f"Processing new image {img_name}...")
         img = io.imread(img_path)
         img = gray_img(img)
@@ -239,7 +307,7 @@ def main(input_path, output_path):
             coord_imgs.append(no_staff_img)
 
         print("Recognize...")
-        recognize(out_file, most_common, coord_imgs,
+        recognize(out_file, img_name, full_img_path, most_common, coord_imgs,
                   imgs_with_staff, imgs_spacing, imgs_rows)
         out_file.close()
         print("Done...")
@@ -248,8 +316,8 @@ def main(input_path, output_path):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("-i","--input", action="store", help="Input File")
-    parser.add_argument("-o","--output",action="store", help="Output File")
+    parser.add_argument("-i","--input-dir", help="Input directory")
+    parser.add_argument("-o","--output-dir", help="Output directory")
 
     args = parser.parse_args()
-    main(args.input, args.output)
+    main(args.input_dir, args.output_dir)

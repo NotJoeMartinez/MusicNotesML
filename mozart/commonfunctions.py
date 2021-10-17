@@ -1,6 +1,5 @@
 
 
-from cv2 import log
 import skimage.io as io
 import matplotlib.pyplot as plt
 import numpy as np
@@ -12,9 +11,7 @@ from skimage.morphology import binary_opening, binary_closing, binary_dilation, 
 from skimage.feature import canny
 from skimage.transform import resize
 
-import logging
 
-logging.basicConfig(filename='commonfunctions.log', filemode='w') 
 def show_images(images, titles=None):
     n_ims = len(images)
     if titles is None:
@@ -30,7 +27,7 @@ def show_images(images, titles=None):
         plt.axis('off')
         n += 1
     fig.set_size_inches(np.array(fig.get_size_inches()) * n_ims)
-    # plt.show()
+    plt.show()
 
 
 def showHist(img):
