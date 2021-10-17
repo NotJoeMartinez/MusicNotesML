@@ -39,5 +39,5 @@ def show_og_overlayed(og_fname, ov_fname, res):
     plt.title("Output array of notes")
     plt.text(0, 0.8, str(res))
 
-    # plt.show()
+    plt.show()
 

@@ -131,7 +131,7 @@ def draw_staff(img,row_positions):
         image[int(row_positions[x]),:] = 0
     return image
 
-def recognize(out_file, img_name, full_img_path, most_common, coord_imgs, imgs_with_staff, imgs_spacing, imgs_rows):
+def recognize(out_file, img_name, full_img_path, most_common, coord_imgs, imgs_with_staff, imgs_spacing, imgs_rows, instrament):
     black_names = ['4', '8', '8_b_n', '8_b_r', '16', '16_b_n', '16_b_r',
                    '32', '32_b_n', '32_b_r', 'a_4', 'a_8', 'a_16', 'a_32', 'chord']
     ring_names = ['2', 'a_2']
@@ -189,7 +189,7 @@ def recognize(out_file, img_name, full_img_path, most_common, coord_imgs, imgs_w
                         c = bbox[2]+boundary[j][0]
                         line_idx, p = estim(int(c), i, imgs_spacing, imgs_rows)
                         l = label_map[line_idx][p]
-                        res.append(get_note_name(prev, l, label))
+                        res.append(get_note_name(prev, l, label, fnum="True", instrament=instrament))
             elif label in ring_names:
                 head_img = 1-binary_fill_holes(1-prim)
                 head_img = binary_closing(head_img, disk(disk_size))
@@ -199,7 +199,7 @@ def recognize(out_file, img_name, full_img_path, most_common, coord_imgs, imgs_w
                     c = bbox[2]+boundary[j][0]
                     line_idx, p = estim(int(c), i, imgs_spacing, imgs_rows)
                     l = label_map[line_idx][p]
-                    res.append(get_note_name(prev, l, label))
+                    res.append(get_note_name(prev, l, label, fnum="True", instrament=instrament))
             elif label in whole_names:
                 c = boundary[j][2]
                 line_idx, p = estim(int(c), i, imgs_spacing, imgs_rows)
@@ -275,7 +275,6 @@ def recognize(out_file, img_name, full_img_path, most_common, coord_imgs, imgs_w
     import subprocess
     subprocess.run(f"convert {no_staff} -matte \( +clone -fuzz 10% -transparent '#ff0000' \) -compose DstOut -composite {overlay}", shell=True)
     subprocess.run(f"magick composite -colorspace sRGB -gravity center {overlay} {background} {output}", shell=True)
-    # from mozart.show_overlayed_plots import show_og_overlayed
     show_og_overlayed(full_img_path, output, res)
 
     print("###########################", res, "##########################")
@@ -289,6 +288,8 @@ def main(args):
         print(df)
 
     elif args.file:
+        instrament = args.instrament
+        print(instrament)
         img_path = args.file
         img_name = img_path.split('/')[-1].split('.')[0]
         output_path = "testing/testing_output"
@@ -324,12 +325,13 @@ def main(args):
 
         print("Recognize...")
         recognize(out_file, img_name, full_img_path, most_common, coord_imgs,
-                imgs_with_staff, imgs_spacing, imgs_rows)
+                imgs_with_staff, imgs_spacing, imgs_rows, instrament)
         out_file.close()
         print("Done...")
 
 
     elif args.input_dir != "" and args.output_dir != "":
+        instrament = args.instrament
         input_path = args.input_dir 
         output_path = args.output_dir
         img_paths = sorted(glob(f'{input_path}/*'))
@@ -370,7 +372,7 @@ def main(args):
 
             print("Recognize...")
             recognize(out_file, img_name, full_img_path, most_common, coord_imgs,
-                    imgs_with_staff, imgs_spacing, imgs_rows)
+                    imgs_with_staff, imgs_spacing, imgs_rows, instrament)
             out_file.close()
             print("Done...")
 
@@ -384,6 +386,7 @@ if __name__ == "__main__":
     parser.add_argument("-i","--input-dir", help="Input directory")
     parser.add_argument("-o","--output-dir", help="Output directory")
     parser.add_argument("-fn", "--read-fingernums", action='store_true', help="read finger num stuff")
+    parser.add_argument("-is", "--instrament", action="store", help="Specifed instrament")
 
     args = parser.parse_args()
     main(args)
