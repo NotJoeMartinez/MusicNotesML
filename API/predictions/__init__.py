@@ -29,7 +29,7 @@ def estim(c, idx, imgs_spacing, imgs_rows):
 # prev = prev - sharp or flat
 # l = octive 
 # label = duration
-def get_note_name(prev, octave, duration, fnum="True", instrament):
+def get_note_name(prev, octave, duration,instrament, fnum="True"):
     from mozart.note_dict import note_dict
     try:
         note_name = f'{octave[0]}{prev}{octave[1]}'
@@ -177,7 +177,7 @@ def recognize(out_file, img_name, full_img_path, most_common, coord_imgs, imgs_w
                         c = bbox[2]+boundary[j][0]
                         line_idx, p = estim(int(c), i, imgs_spacing, imgs_rows)
                         l = label_map[line_idx][p]
-                        res.append(get_note_name(prev, l, label, fnum="True", instrament=instrament))
+                        res.append(get_note_name(prev, l, label, instrament, fnum="True" ))
             elif label in ring_names:
                 head_img = 1-binary_fill_holes(1-prim)
                 head_img = binary_closing(head_img, disk(disk_size))
@@ -187,7 +187,7 @@ def recognize(out_file, img_name, full_img_path, most_common, coord_imgs, imgs_w
                     c = bbox[2]+boundary[j][0]
                     line_idx, p = estim(int(c), i, imgs_spacing, imgs_rows)
                     l = label_map[line_idx][p]
-                    res.append(get_note_name(prev, l, label, fnum="True", instrament=instrament))
+                    res.append(get_note_name(prev, l, label, instrament, fnum="True"))
             elif label in whole_names:
                 c = boundary[j][2]
                 line_idx, p = estim(int(c), i, imgs_spacing, imgs_rows)
