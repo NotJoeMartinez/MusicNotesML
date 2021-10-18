@@ -29,7 +29,7 @@ def estim(c, idx, imgs_spacing, imgs_rows):
 # prev = prev - sharp or flat
 # l = octive 
 # label = duration
-def get_note_name(prev, octave, duration, fnum="True", instrament="tuba"):
+def get_note_name(prev, octave, duration, fnum="True", instrament):
     from mozart.note_dict import note_dict
     try:
         note_name = f'{octave[0]}{prev}{octave[1]}'
@@ -280,7 +280,6 @@ def recognize(out_file, img_name, full_img_path, most_common, coord_imgs, imgs_w
 def make_predictions(filepath, instrament):
 
     img_path = filepath 
-    instrament = instrament 
 
     img_name = img_path.split('/')[-1].split('.')[0]
     output_path = "API/predictions/output"

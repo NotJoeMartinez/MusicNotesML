@@ -24,8 +24,9 @@ def make_request(b64_string):
     raw_data = {
         'image': b64_string,
         "secret_key": os_secret_key, 
-        "instrament": "tuba"
+        "instrament": "trumpet"
         }
+
     json_data = json.dumps(raw_data, indent=2)
 
     resp = requests.post(url, headers=headers, data=json_data)
