@@ -4,6 +4,10 @@ This model and augmentation scripts a refactored version of https://github.com/a
 It will be integrated into a web application with [@stephenjoel2k](https://github.com/Stephenjoel2k/MusicNotes)
 frontend. 
 
+### Demo 
+
+![demo](docs/demo.gif)
+
 **Input**
 ![input](docs/04.PNG)
 
