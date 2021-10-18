@@ -12,8 +12,14 @@ send_post(){
 	rm testing/api_testing_imgs/*.json
 }
 
-run_flask(){
+run_api(){
 	export FLASK_APP=API/__init__.py
+	export FLASK_ENV=development
+	flask run
+}
+
+run_frontend(){
+	export FLASK_APP=frontend/__init__.py
 	export FLASK_ENV=development
 	flask run
 }

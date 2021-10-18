@@ -1,117 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <title>Music Notes</title>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!--===============================================================================================-->
-    <link rel="icon" type="image/png" href="static/images/img-01.png" />
-    <!--===============================================================================================-->
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="static/vendor/bootstrap/css/bootstrap.min.css"
-    />
-    <!--===============================================================================================-->
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="static/fonts/font-awesome-4.7.0/css/font-awesome.min.css"
-    />
-    <!--===============================================================================================-->
-    <link rel="stylesheet" type="text/css" href="static/vendor/animate/animate.css" />
-    <!--===============================================================================================-->
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="static/vendor/css-hamburgers/hamburgers.min.css"
-    />
-    <!--===============================================================================================-->
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="static/vendor/select2/select2.min.css"
-    />
-    <!--===============================================================================================-->
-    <link rel="stylesheet" type="text/css" href="static/css/util.css" />
-    <link rel="stylesheet" type="text/css" href="static/css/main.css" />
-    <!--===============================================================================================-->
-  </head>
-  <body>
-    <div class="limiter">
-      <div class="container-login100">
-        <div class="wrap-login100">
-          <div class="login100-pic js-tilt" data-tilt>
-            <img src="static/images/img-01.png" alt="IMG" />
-          </div>
-<!-- 
-          <form class="login100-form validate-form"
-            action="/upload"
-            method="post"
-            enctype="multipart/form-data"
-          > -->
-            <span class="login100-form-title">
-              Upload Sheet Music
-            </span>
 
+<head>
+<link rel="stylesheet" href="static/css/upload.css">
 
-            <h1>Upload new File</h1>
-            <form method=post enctype=multipart/form-data>
-              <!-- this is submit button -->
-              <input type=file name=file>
-              <input type=submit value=Upload>
-              <!--  -->
-            </form>
+</head>
 
+<h2>Music Notes</h2>
+<p class="lead">Upload a image of your music stanza</p>
 
-            <p id="b64"></p>
-            <img id="img" height="150">
+<!-- Upload  -->
+<form id="file-upload-form" class="uploader" method=post enctype=multipart/form-data  >
+  <input id="file-upload" type="file" name="file" accept="image/*" />
+<!-- dropdown -->
 
-            <!-- <div class="container-login100-form-btn"> -->
-              <!-- <button class="login100-form-btn"> -->
-                <!-- SUMBIT -->
-              <!-- </button> -->
-            <!-- </div> -->
-
-            <div class="text-center p-t-12">
-              <span class="txt1">
-                Don't have a sample image?
-              </span>
-              <a class="txt2" href="https://musescore.com/" target="_blank">
-                Get it here!
-              </a>
-            </div>
-
-            <div class="text-center p-t-136">
-              <a
-                class="txt2"
-                href="https://github.com/"
-              >
-                Work on this app on Github
-                <i class="fa fa-long-arrow-right m-l-5" aria-hidden="true"></i>
-              </a>
-            </div>
-          </form>
-        </div>
-      </div>
+  <label for="file-upload" id="file-drag">
+    <img id="file-image" src="#" alt="Preview" class="hidden">
+    <div id="start">
+      <i class="fa fa-download" aria-hidden="true"></i>
+      <div>Select a file or drag here</div>
+      <div id="notimage" class="hidden">Please select an image</div>
+      <span id="file-upload-btn" class="btn btn-primary">Select a file</span>
     </div>
+    <div id="response" class="hidden">
+      <div id="messages"></div>
+      <progress class="progress" id="file-progress" value="0">
+        <span>0</span>%
+      </progress>
+    </div>
+  </label>
 
+  <label id="idropdown" for="instrament">Choose Instrament:</label>
+  <select name="instrament" id="instrament">
+    <option value="trumpet">Trumpet</option>
+    <option value="trumbone">Trumbone</option>
+    <option value="euphonium">Euphonium</option>
+    <option value="french horn">French Horn</option>
+  </select>
 
-
-    <!--===============================================================================================-->
-    <script src="static/vendor/jquery/jquery-3.2.1.min.js"></script>
-    <!--===============================================================================================-->
-    <script src="static/vendor/bootstrap/js/popper.js"></script>
-    <script src="static/vendor/bootstrap/js/bootstrap.min.js"></script>
-    <!--===============================================================================================-->
-    <script src="static/vendor/select2/select2.min.js"></script>
-    <!--===============================================================================================-->
-    <script src="static/vendor/tilt/tilt.jquery.min.js"></script>
-    <script>
-      $('.js-tilt').tilt({
-        scale: 1.1,
-      })
-    </script>
-    <!--===============================================================================================-->
-  </body>
-</html>
+  <input type=submit value="Get Notes">
+</form>
+<script src="static/js/upload.js"></script>

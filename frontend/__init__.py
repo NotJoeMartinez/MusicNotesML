@@ -23,6 +23,10 @@ def upload_file():
             flash('No file part')
             return redirect(request.url)
         file = request.files['file']
+        import logging
+        logging.basicConfig(filename="instra.log", filemode="w")
+        instrament = request.form['instrament']
+        logging.error(f"{instrament}")
         # If the user does not select a file, the browser submits an
         # empty file without a filename.
         if file.filename == '':
@@ -35,7 +39,7 @@ def upload_file():
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], in_file_name))
 
         b64_string_out = encode_img(in_file_name, file_ext)
-        b64_string_in = make_request(b64_string_out)
+        b64_string_in = make_request(b64_string_out, instrament)
         write_annotated(b64_string_in, in_file_name)
 
         return redirect(url_for('show_fingers', name=in_file_name))
@@ -55,4 +59,5 @@ def show_fingers(name):
     return send_from_directory("uploads", name)
 
 if __name__ == "__main__":
+    app.secret_key = 'super secret key'
     app.run(host='0.0.0.0')
