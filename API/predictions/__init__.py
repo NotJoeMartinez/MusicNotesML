@@ -25,7 +25,10 @@ def estim(c, idx, imgs_spacing, imgs_rows):
             return index+1, 1
     return 7, 1
 
-
+# res.append(get_note_name(prev, l, label, fnum="True", instrament=instrament))
+# prev = prev - sharp or flat
+# l = octive 
+# label = duration
 def get_note_name(prev, octave, duration, fnum="True", instrament="tuba"):
     from mozart.note_dict import note_dict
     try:
