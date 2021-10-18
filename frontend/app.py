@@ -1,7 +1,7 @@
 import os
-from flask import Flask, flash, request, redirect, url_for
+from flask import Flask, flash, request, redirect, url_for, render_template
 from werkzeug.utils import secure_filename
-from scripts import encode_img, make_request, write_annotated
+from scripts import encode_img, make_request, write_annotated 
 
 UPLOAD_FOLDER = 'uploads'
 ANNOTATED_FOLDER = 'annotaed'
@@ -40,15 +40,12 @@ def upload_file():
 
         return redirect(url_for('show_fingers', name=in_file_name))
 
-    return '''
-    <!doctype html>
-    <title>Upload new File</title>
-    <h1>Upload new File</h1>
-    <form method=post enctype=multipart/form-data>
-      <input type=file name=file>
-      <input type=submit value=Upload>
-    </form>
-    '''
+    return render_template('music_form.html')
+    # return '''
+    # <!doctype html>
+    # <title>Upload new File</title>
+ 
+    # '''
 
 from flask import send_from_directory
 @app.route('/uploads/<name>')

@@ -33,6 +33,8 @@ def make_request(b64_string):
     resp = resp.json()
     return resp['b64_overylayed_img']
 
+
+
 def write_annotated(b64_string, og_img_name):
     import logging
     logging.basicConfig(filename="sripts.log", filemode='w')

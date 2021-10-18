@@ -1,0 +1,65 @@
+body {
+  font-family: "century gothic";
+  background: linear-gradient(-135deg, #c850c0, #4158d0);
+  background-position: center;
+  background-size: cover;
+  background-blend-mode: darken;
+  opacity: 0.9;
+  margin: 0;
+}
+
+h1 {
+  font-size: 45px;
+  text-align: center;
+  margin: 0 auto;
+  background-color: #fffafadb;
+  padding: 10px;
+  width: 100%;
+}
+
+span {
+  color: #1993fe;
+}
+
+th {
+  font-size: 20px;
+}
+
+.btn {
+  position: absolute;
+  right: 50px;
+  padding: 10px;
+  background-color: white;
+  border: 2px solid black;
+  top: 50px;
+  border-radius: 100%;
+}
+
+th,
+td {
+  text-align: center;
+  padding: 10px;
+  border: 1px solid #000;
+}
+
+th {
+  background-color: black;
+  color: white;
+}
+
+table {
+  border-collapse: collapse;
+  margin: 0;
+  padding: 0;
+  background: white;
+  margin-top: 30px;
+  width: 100%;
+}
+
+img {
+  padding: 0;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
