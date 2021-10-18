@@ -3,7 +3,7 @@ from flask import Flask, flash, request, redirect, url_for, render_template
 from werkzeug.utils import secure_filename
 from .scripts import encode_img, make_request, write_annotated 
 
-UPLOAD_FOLDER = 'frontend/uploads'
+UPLOAD_FOLDER = 'frontend/static/uploads'
 ANNOTATED_FOLDER = 'annotaed'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png','PNG', 'jpg', 'jpeg', 'gif'}
 
@@ -36,13 +36,19 @@ def upload_file():
         import uuid, pathlib
         file_ext = pathlib.Path(file.filename).suffix
         in_file_name = f"{str(uuid.uuid1())}{file_ext}"
+        in_file_path = f"{app.config['UPLOAD_FOLDER']}/{in_file_name}"
+
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], in_file_name))
 
-        b64_string_out = encode_img(in_file_name, file_ext)
-        b64_string_in = make_request(b64_string_out, instrament)
-        write_annotated(b64_string_in, in_file_name)
+        encoded_img = encode_img(in_file_path, file_ext)
+        api_responce = make_request(encoded_img, instrament)
 
-        return redirect(url_for('show_fingers', name=in_file_name))
+        b64_responce = api_responce['b64_overylayed_img']
+        note_names = api_responce['notes_arr']
+
+        write_annotated(b64_responce, in_file_name)
+
+        return redirect(url_for('show_fingers', overlayed_img=in_file_name,instrament=instrament))
 
     return render_template('music_form.html')
     # return '''
@@ -52,11 +58,15 @@ def upload_file():
     # '''
 
 from flask import send_from_directory
-@app.route('/uploads/<name>')
-def show_fingers(name):
+@app.route('/uploads/<overlayed_img>/<instrament>')
+def show_fingers(overlayed_img, instrament):
 
+
+    return render_template("display_overlayed.html",
+    overlayed_img=overlayed_img, 
+    instrament=instrament)
     #return send_from_directory(app.config["UPLOAD_FOLDER"], name)
-    return send_from_directory("uploads", name)
+    # return send_from_directory("uploads", name)
 
 if __name__ == "__main__":
     app.secret_key = 'super secret key'
