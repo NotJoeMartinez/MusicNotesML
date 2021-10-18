@@ -1,3 +1,5 @@
+frontend/uploads/*
+frontend/annotated/*
 mozart/train_data
 mozart/train_data/*
 testing/api_testing_imgs

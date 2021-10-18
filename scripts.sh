@@ -21,7 +21,7 @@ run_flask(){
 test_prod(){
 	uuid=$(uuidgen)
 	curl -X POST -H "Content-Type: application/json" -d \
-	'{"image" : "'"$( base64 testing/testing_imgs/01.PNG)"'", "secret_key" : "'"$MSHACK_KEY"'", "'"instrament"'": "'"tuba"'"}'\
+	'{"image" : "'"$( base64 testing/testing_imgs/05.PNG)"'", "secret_key" : "'"$MSHACK_KEY"'", "'"instrament"'": "'"tuba"'"}'\
 	http://40.121.3.69/getnotes >> testing/api_testing_imgs/$uuid.json
 
 	python testing/test_api.py -jp testing/api_testing_imgs/$uuid.json

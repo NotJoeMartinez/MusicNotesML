@@ -27,7 +27,7 @@ def estim(c, idx, imgs_spacing, imgs_rows):
     return 7, 1
 
 
-def get_note_name(prev, octave, duration, fnum="True", instrament="tuba"):
+def get_note_name(prev, octave, duration, fnum="True", instrament="trumpet"):
     from mozart.note_dict import note_dict
     try:
         note_name = f'{octave[0]}{prev}{octave[1]}'
