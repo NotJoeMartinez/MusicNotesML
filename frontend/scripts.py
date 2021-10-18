@@ -6,7 +6,7 @@ from requests.structures import CaseInsensitiveDict
 import base64, json, os
 
 def encode_img(filename, ext="png"):
-    file_path = f"uploads/{filename}"
+    file_path = f"frontend/uploads/{filename}"
     with open(file_path, "rb") as image_file:
         encoded_string = base64.b64encode(image_file.read())
     
@@ -39,7 +39,7 @@ def write_annotated(b64_string, og_img_name):
     import logging
     logging.basicConfig(filename="sripts.log", filemode='w')
 
-    out_filepath = f"uploads/{og_img_name}"
+    out_filepath = f"frontend/uploads/{og_img_name}"
     logging.error(f"{out_filepath}\n{og_img_name} \n{b64_string}")
 
     imgdata = base64.b64decode(b64_string)

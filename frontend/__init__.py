@@ -1,9 +1,9 @@
 import os
 from flask import Flask, flash, request, redirect, url_for, render_template
 from werkzeug.utils import secure_filename
-from scripts import encode_img, make_request, write_annotated 
+from .scripts import encode_img, make_request, write_annotated 
 
-UPLOAD_FOLDER = 'uploads'
+UPLOAD_FOLDER = 'frontend/uploads'
 ANNOTATED_FOLDER = 'annotaed'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png','PNG', 'jpg', 'jpeg', 'gif'}
 
@@ -41,8 +41,18 @@ def upload_file():
         return redirect(url_for('show_fingers', name=in_file_name))
 
     return render_template('music_form.html')
+    # return '''
+    # <!doctype html>
+    # <title>Upload new File</title>
+ 
+    # '''
 
 from flask import send_from_directory
-@app.route('/frontend/uploads/<name>')
+@app.route('/uploads/<name>')
 def show_fingers(name):
-    return send_from_directory(app.config["UPLOAD_FOLDER"], name)
+
+    #return send_from_directory(app.config["UPLOAD_FOLDER"], name)
+    return send_from_directory("uploads", name)
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0')
