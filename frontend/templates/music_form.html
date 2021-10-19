@@ -1,12 +1,7 @@
 
 <head>
 <link rel="stylesheet" href="static/css/upload.css">
-<link rel="stylesheet" href="static/jquery-nice-select-1.1.0/css/nice-select.css">
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"
-        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-        crossorigin="anonymous">
-</script>
-<script src="static/jquery-nice-select-1.1.0/js/jquery.nice-select.js"></script>
+
 </head>
 
 <h2>Music Notes</h2>
@@ -33,7 +28,7 @@
     </div>
   </label>
 
-  <label id="idropdown" for="instrament">Choose Instrument:</label>
+  <label id="idropdown" for="instrament">Choose Instrament:</label>
   <select name="instrament" id="instrament">
     <option value="trumpet">Trumpet</option>
     <option value="trumbone">Trumbone</option>
@@ -41,14 +36,6 @@
     <option value="french horn">French Horn</option>
   </select>
 
-  <input class="file-upload-btn"type=submit value="Get Notes">
+  <input type=submit value="Get Notes">
 </form>
 <script src="static/js/upload.js"></script>
-<script type='text/javascript'>
- 
-  $(document).ready(function(){
-   
-    $('#instrament').niceSelect();
-   
-  });
-  </script>
