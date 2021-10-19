@@ -1,3 +1,4 @@
+import base64
 import os
 from flask import Flask, flash, request, redirect, url_for, render_template
 from werkzeug.utils import secure_filename
@@ -23,10 +24,7 @@ def upload_file():
             flash('No file part')
             return redirect(request.url)
         file = request.files['file']
-        import logging
-        logging.basicConfig(filename="instra.log", filemode="w")
         instrament = request.form['instrament']
-        logging.error(f"{instrament}")
         # If the user does not select a file, the browser submits an
         # empty file without a filename.
         if file.filename == '':
@@ -48,7 +46,16 @@ def upload_file():
 
         write_annotated(b64_responce, in_file_name)
 
-        return redirect(url_for('show_fingers', overlayed_img=in_file_name,instrament=instrament))
+        import base64
+        data = str(note_names)
+        # URL and Filename Safe Base64 Encoding
+        encoded_str = base64.b64encode(data.encode("utf-8"))
+        encoded_str = str(encoded_str, "utf-8")
+
+        return redirect(url_for('show_fingers', 
+        overlayed_img=in_file_name,
+        instrament=instrament, 
+        note_names=encoded_str))
 
     return render_template('music_form.html')
     # return '''
@@ -58,13 +65,18 @@ def upload_file():
     # '''
 
 from flask import send_from_directory
-@app.route('/uploads/<overlayed_img>/<instrament>')
-def show_fingers(overlayed_img, instrament):
+@app.route('/uploads/<overlayed_img>/<instrament>/<note_names>')
+def show_fingers(overlayed_img, instrament, note_names):
 
+    note_name_arr = base64.b64decode(note_names) 
+    note_name_arr = note_name_arr.decode("utf-8")
 
+    note_name_arr = eval(note_name_arr)
+    
     return render_template("display_overlayed.html",
     overlayed_img=overlayed_img, 
-    instrament=instrament)
+    instrament=instrament,
+    note_names=note_name_arr)
     #return send_from_directory(app.config["UPLOAD_FOLDER"], name)
     # return send_from_directory("uploads", name)
 

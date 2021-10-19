@@ -11,7 +11,16 @@
 <div class="container">
 	<h1> Finger Annotations for {{ instrament }} </h1>
 	<img class="img-responsive" src="/static/uploads/{{ overlayed_img }}" alt="overlayed image " > 
+	<p>
+		<ol>
+		{% for note in note_names %}
+			<li> 
+				{{ note }}
+			 </li>
 
+		{% endfor %}
+		</ol>
+	</p>
 </div>
 
 <!-- <h2>Hard coded </h2> -->

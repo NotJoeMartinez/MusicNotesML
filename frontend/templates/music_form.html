@@ -1,41 +1,60 @@
 
 <head>
-<link rel="stylesheet" href="static/css/upload.css">
+  <link rel="stylesheet" href="static/css/upload.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/css/nice-select.css" integrity="sha512-uHuCigcmv3ByTqBQQEwngXWk7E/NaPYP+CFglpkXPnRQbSubJmEENgh+itRDYbWV0fUZmUz7fD/+JDdeQFD5+A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!-- <link rel="stylesheet" href="static/jquery-nice-select-1.1.0/css/nice-select.css"> -->
 
-</head>
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+          integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+          crossorigin="anonymous">
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/js/jquery.nice-select.min.js" integrity="sha512-NqYds8su6jivy1/WLoW8x1tZMRD7/1ZfhWG/jcRQLOzV1k1rIODCpMgoBnar5QXshKJGV7vi0LXLNXPoFsM5Zg==" crossorigin="anonymous" referrerpolicy="no-referrer">
+  </script>
 
-<h2>Music Notes</h2>
-<p class="lead">Upload a image of your music stanza</p>
-
-<!-- Upload  -->
-<form id="file-upload-form" class="uploader" method=post enctype=multipart/form-data  >
-  <input id="file-upload" type="file" name="file" accept="image/*" />
-<!-- dropdown -->
-
-  <label for="file-upload" id="file-drag">
-    <img id="file-image" src="#" alt="Preview" class="hidden">
-    <div id="start">
-      <i class="fa fa-download" aria-hidden="true"></i>
-      <div>Select a file or drag here</div>
-      <div id="notimage" class="hidden">Please select an image</div>
-      <span id="file-upload-btn" class="btn btn-primary">Select a file</span>
-    </div>
-    <div id="response" class="hidden">
-      <div id="messages"></div>
-      <progress class="progress" id="file-progress" value="0">
-        <span>0</span>%
-      </progress>
-    </div>
-  </label>
-
-  <label id="idropdown" for="instrament">Choose Instrament:</label>
-  <select name="instrament" id="instrament">
-    <option value="trumpet">Trumpet</option>
-    <option value="trumbone">Trumbone</option>
-    <option value="euphonium">Euphonium</option>
-    <option value="french horn">French Horn</option>
-  </select>
-
-  <input type=submit value="Get Notes">
-</form>
-<script src="static/js/upload.js"></script>
+  <!-- <script src="static/jquery-nice-select-1.1.0/js/jquery.nice-select.js"></script> -->
+  </head>
+  
+  <h2>Music Notes</h2>
+  <p class="lead">Upload a image of your music stanza</p>
+  
+  <!-- Upload  -->
+  <form id="file-upload-form" class="uploader" method=post enctype=multipart/form-data  >
+    <input id="file-upload" type="file" name="file" accept="image/*" />
+  <!-- dropdown -->
+  
+    <label for="file-upload" id="file-drag">
+      <img id="file-image" src="#" alt="Preview" class="hidden">
+      <div id="start">
+        <i class="fa fa-download" aria-hidden="true"></i>
+        <div>Select a file or drag here</div>
+        <div id="notimage" class="hidden">Please select an image</div>
+        <span id="file-upload-btn" class="btn btn-primary">Select a file</span>
+      </div>
+      <div id="response" class="hidden">
+        <div id="messages"></div>
+        <progress class="progress" id="file-progress" value="0">
+          <span>0</span>%
+        </progress>
+      </div>
+    </label>
+  
+    <label id="idropdown" for="instrament">Choose Instrument:</label>
+    <select name="instrament" id="instrament">
+      <option value="trumpet">Trumpet</option>
+      <option value="trumbone">Trumbone</option>
+      <option value="euphonium">Euphonium</option>
+      <option value="french horn">French Horn</option>
+    </select>
+  
+    <input class="file-upload-btn"type=submit value="Get Notes">
+  </form>
+  <script src="static/js/upload.js"></script>
+  <script type='text/javascript'>
+   
+    $(document).ready(function(){
+     
+      console.log("HELOO");
+      $('#instrament').niceSelect();
+     
+    });
+    </script>
